@@ -23,13 +23,13 @@ def PartitionData(Data):
  Endindex=[]
  Listofdates=[]
  DateToIndex = {}
- for i in range (0,len(Data.ind)):
+ for q in range (0,len(Data.ind)):
 
-  if Data.datadate[i] in DateToIndex.keys():
-    DateToIndex[Data.datadate[i]].append(i)
+  if Data.datadate[q] in DateToIndex.keys():
+    DateToIndex[Data.datadate[q]].append(q)
   else:
-    DateToIndex[Data.datadate[i]] = [i]
-    Endindex.append(i)
+    DateToIndex[Data.datadate[q]] = [q]
+    Endindex.append(q)
  Endindex.append(len(Data.ind))
  for xyz in range (0,len(Endindex)-1):
      Listofdates.append(Data.iloc[int(Endindex[xyz]):int(Endindex[xyz+1])])
@@ -76,7 +76,7 @@ def GetMomentumBasedPriority(PartitionedDataFrameList, DateToIndex ,today):
   Ndaybackprice = vector(Ndaybackprice)
   momentum=todayprice-Ndaybackprice
   meanprice = (todayprice+Ndaybackprice)/2
-  print(meanprice)
+  #print(meanprice)
   momentumbymean = momentum/meanprice
   return momentumbymean
 #%% 
@@ -85,20 +85,20 @@ def GetBalanced(prices, weights,balance):
   # weights : Multi-hot Numpy Array : The Elements corresponding to stocks which are to be bought(Top M Stocks with positive Momentum Indicator) are set to their priority, All other elements are set to zero.
    # Returns Numpy array containing the number of shares to buy for each stock!
   a = sorted(weights)
-  i=4
+  y=4
   for j in range(5,30):
       a[j]=0
-  while i>=1:
-      if a[i]>0:
+  while y>=1:
+      if a[y]>0:
           break
       # elif j==0:
       #     print("There are no prmising stocks. Consider not investing.")
       else:
-          a[i]=0
-          i=i-1
-  for k in range(0,30):
-      if weights[k]<a[i]:
-          weights[k]=0 
+          a[y]=0
+          y=y-1
+  for h in range(0,30):
+      if weights[h]<a[h]:
+          weights[h]=0 
   vector = np.vectorize(float)
   weights = vector(weights)  
   weightedweight=weights/sum(weights)
@@ -148,7 +148,7 @@ class PortFolio:
 #%%
 myPortfolio = PortFolio(99999,99999,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 NetWorthAfterEachTrade = [99999]
-
+day = [N]
 
 #First Get the Data
 Data = GetData("DATA.csv")
@@ -166,49 +166,15 @@ for i in range(N+1,int((len(Data.ind))/30)):
         myPortfolio.prices[k] = bruhh[3]
   # Get NetWorth and store in list
   NetWorthAfterEachTrade.append(myPortfolio.CalculateNetWorth())
+  day.append(i)
   # Check if you need to rebalance Portfolio's Today
   if (i%T)==0 :
         myPortfolio.RebalancePortFolio(GetMomentumBasedPriority(PartitionedData, DateToIndex ,today))
-  print(i)
-  # If so, do it by Calling first the GetMomentumBasedPriority function and then passing it to the rebalance function
+    # If so, do it by Calling first the GetMomentumBasedPriority function and then passing it to the rebalance function
 print("Thanks for viewing")
-print(NetWorthAfterEachTrade)
 #%%
-def VizualizeData(NetWorthAfterEachTrade):
- 
-
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+def VizualizeData():
+    plt.plot(day,NetWorthAfterEachTrade)
+    plt.ylabel('Total Net Worth')
+    plt.xlabel('Number of working days')
+    plt.show()
